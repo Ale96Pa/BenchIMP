@@ -1,0 +1,82 @@
+"""
+Benchmark parameters
+"""
+num_cores = 20
+ratio_step = 20
+messing_step = 25
+magnitude_step = 25
+
+perform_sampling = True
+sampling_percentage = 20
+
+perform_augmentation = True
+
+noising_flag = False
+
+"""
+File Management parameters
+"""
+input_folder = 'input/'
+input_log = input_folder+"IMPlog.csv"
+input_models = input_folder+"models.py"
+output_path = 'output'
+# output_path_clean = 'OutputClean/'
+# output_gts_clear = 'OutputCleanGt/'
+# output_gts_noised = 'OutputNoisedGt/'
+
+# enriched_log = f'{input_path}/EnrichedLog.csv'
+# sampled_log = f'{input_path}/SampledLog.csv'
+# output_logByCase = f'{output_path}/NoisedLogByCase'
+# output_noisedLogs = f'{output_path}/NoisedLogs'
+
+# parameters_gts = f'models_parameters'
+# output_path_models = f"models"
+# ground_truth_file = f"gts"
+# bmk_output = f"benchmark"
+# output_path_classification = f"classification"
+# path_clean_classification = f"{output_gts_clear}classification/D0_P0_R0_I0_U0_P0_[V0,N0,M0(0)]"
+
+"""
+Preprocessing and performance parameters
+"""
+features = ['category', 'made_sla', 'knowledge', 'u_priority_confirmation', 'priority',
+            'reassignment_count', 'reopen_count']
+features_list = ["duration_phase", "preproc_priority", "reassignment_count", "preproc_impact", "preproc_urgency"]
+features_type = ["float", "enum", "integer", "enum", "enum"]
+date_format = '%d/%m/%Y %H:%M'
+noMagnitudeTypes = ["enum", "boolean"]
+# alpha = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+
+"""
+Logging
+"""
+logging_folder = "logging/"
+
+# """
+# Classification
+# """
+# round_factor = 20
+# round = 0
+
+"""
+Noise Validation Setup
+"""
+noising_validation_output = "./NoisingValidationOutput"
+noising_validation_report = "./NoisingValidationReport"
+only_validation = True
+files_path_logs = "./Output/NoisedLogByCase"
+files_path_logByCase = "./Output/NoisedLogs"
+valOut_path = "./OutputNoisingValidation"
+
+"""
+Analyses Setup
+"""
+path_clean_gt = "OutputCleanGt/benchmark/GtFull.csv"
+# path_noised_gts = f"{output_gts_noised}benchmark"
+flag_noised_gt_values = [False]
+metrics = ["mae", "mse", "median"]
+models_name = ["LR", "ETR", "CP"]
+gts_name = ["Gt1", "Gt2", "Gt3", "Gt4", "Gt5"]
+colors_model = ["#66c2a5", "#8da0cb", "#fc8d62"]
+colors_gt = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00']
+features = ["duration_phase", "preproc_priority", "reassignment_count", "preproc_impact", "preproc_urgency"]
