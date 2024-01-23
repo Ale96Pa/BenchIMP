@@ -1,98 +1,73 @@
 import glob, os, sys, warnings, logging
+import pandas as pd
 from pebble import ProcessPool
 
-# warnings.filterwarnings('ignore')
+warnings.filterwarnings('ignore')
 
 import config
+from bmk_modules.sampling import sample_log
+from bmk_modules.utils import format_dataset_by_incidents,filename_generation
+from bmk_modules.run_models import cost_computation
+from bmk_modules.evaluation import compare_models
 
-logfolder = config.logging_folder
+loggingfolder=config.logging_folder
+
+input_logfolder=config.input_logfolder
+tmp_folder=config.tmp_folder
+output_folder=config.output_folder
+output_cleanfolder=config.output_cleanfolder
+output_cleanmetrics=config.output_cleanmetrics
 
 perform_augmentation=config.perform_augmentation
 perform_sampling=config.perform_sampling
+sampling_percentage=config.sampling_percentage
 
 if __name__ == '__main__':
-    if not os.path.exists(logfolder): os.makedirs(logfolder)
-    logging.basicConfig(filename=logfolder+"main_bmk", level=logging.DEBUG, filemode="w",
+    if not os.path.exists(loggingfolder): os.makedirs(loggingfolder)
+    logging.basicConfig(filename=loggingfolder+"main_bmk", level=logging.DEBUG, filemode="w",
                         format='%(asctime)s - %(levelname)s: %(message)s')
     
+    if not os.path.exists(tmp_folder): os.mkdir(tmp_folder)
+    if not os.path.exists(output_folder): os.mkdir(output_folder)
+    if not os.path.exists(output_cleanfolder): os.mkdir(output_cleanfolder)
+
     if perform_augmentation:
         logging.info("[START AUGMENTATION]")
+        
+        logging.info("[END AUGMENTATION]")
     else:
-        logging("No augmentation")
+        logging.info("No augmentation")
 
     if perform_sampling:
         logging.info("[START SAMPLING]")
+        for logfile in os.listdir(input_logfolder):
+            sampled_dataset = sample_log(input_logfolder+logfile,sampling_percentage,tmp_folder)
+            logging.info("Sampled: %s", logfile)
+        logging.info("[END SAMPLING]")
     else:
         logging.info("No sampling")
 
-    # if perform_sampling:
-    #     logging.info("[START SAMPLING]")
-    #     try:
-    #         input_dataset = pd.read_csv(input_logs, sep=";")
-    #         incidents_original = len(input_dataset['incident_id'].unique())
-    #         input_dataset = sampling.sampling_orchestrator(input_dataset, sampling_percentage)
-    #         input_dataset.to_csv(sampled_log, index=False)
-    #         incidents_sampled = len(input_dataset['incident_id'].unique())
-    #         logging.info(f"Original number of incidents {incidents_original}")
-    #         logging.info(f"Sampling percentage {sampling_percentage}")
-    #         logging.info(f"Samples number of incidents {incidents_sampled}")
-    #     except Exception as e:
-    #         logging.error("[ERROR in input sampling] %s", e)
-    #         sys.exit("Exit with error")
-    # else:
-    #     try:
-    #         input_dataset = pd.read_csv(input_logs, sep=";")
-    #         input_dataset.to_csv(sampled_log, index=False)
-    #     except Exception as e:
-    #         logging.error("[ERROR in input sampling %s]", e)
-    #         sys.exit("Exit with error")
-    #     logging.info("[SAMPLING] already computed")
+    for logsampled in os.listdir(tmp_folder):
+        if "0" in logsampled: continue
+        log_by_case = format_dataset_by_incidents(tmp_folder+logsampled, "incident_id")
+        test_name = filename_generation([], 0, [0,0,0], 0)
+        df_enrichedcleanlog = cost_computation(tmp_folder+logsampled,log_by_case,output_cleanfolder)
+        df_metrics = compare_models(df_enrichedcleanlog,"incident_id",output_cleanmetrics)
+        print(df_metrics)
 
-    # if perform_preproc:
-    #     logging.info("[START PREPROCESSING]")
-    #     try:
-    #         input_dataset = pd.read_csv(sampled_log)
-    #         preproc.perform_preproc(input_dataset)
-    #     except Exception as e:
-    #         logging.error("[ERROR in input data processing] %s", e)
-    #         sys.exit("Exit with error")
-    #     try:
-    #         original_dataset = pd.read_csv(util_dataset)
-    #     except Exception as e:
-    #         logging.error("[ERROR in original data processing] %s", e)
-    #         sys.exit("Exit with error")
 
-    #     logging.info("[END PREPROCESSING]")
-    # else:
-    #     try:
-    #         original_dataset = pd.read_csv(util_dataset, sep=";")
-    #     except Exception as e:
-    #         logging.error("[ERROR in original data processing] %s", e)
-    #         sys.exit('Something bad happened')
-    #     logging.info("[PREPROCESSING] already computed")
 
-    # alignment_file = pd.read_csv(f"{alignment_file_path}")
-    # false_noise_gt_dfFull = pd.DataFrame()
-    # try:
-    #     # Clean case
-    #     log_by_case = format_dataset.format_dataset_by_incidents(original_dataset, alignment_file,
-    #                                                              "incident_id")
-    #     test_name = filename_generation.filename_generation([], 0, [0, 0, 0], 0)
-    #     root_path = conf.output_gts_clear
-    #     logging.info("[CLEAN CASE] dataset formatted and created")
+    # false_noise_gt_dfFull = df_full
+    # logging.info("[CLEAN CASE] Ground Truths calculated")
 
-    #     df_full = gt.ground_thruths_main(original_dataset, log_by_case, "", root_path)
-    #     false_noise_gt_dfFull = df_full
-    #     logging.info("[CLEAN CASE] Ground Truths calculated")
+    # result = models.models_main(df_full, log_by_case, test_name, root_path)
+    # logging.info("[CLEAN CASE] models run")
 
-    #     result = models.models_main(df_full, log_by_case, test_name, root_path)
-    #     logging.info("[CLEAN CASE] models run")
+    # classification.classification_main(result, test_name, root_path)
+    # logging.info("[CLEAN CASE] models assessed")
+        
 
-    #     classification.classification_main(result, test_name, root_path)
-    #     logging.info("[CLEAN CASE] models assessed")
-    # except Exception as e:
-    #     logging.error("[ERROR in alignment file processing] %s", e)
-    #     sys.exit("Exit with error")
+
 
     # # Create Noised LogByCase
     # noising.noising_orchestrator(original_dataset, alignment_file)

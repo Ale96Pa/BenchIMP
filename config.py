@@ -6,10 +6,10 @@ ratio_step = 20
 messing_step = 25
 magnitude_step = 25
 
-perform_sampling = True
 sampling_percentage = 20
 
-perform_augmentation = True
+perform_sampling = False
+perform_augmentation = False
 
 noising_flag = False
 
@@ -17,9 +17,15 @@ noising_flag = False
 File Management parameters
 """
 input_folder = 'input/'
-input_log = input_folder+"IMPlog.csv"
+input_logfolder=input_folder+"logs/"
+input_reallog = input_logfolder+"IMPlog.csv"
 input_models = input_folder+"models.py"
-output_path = 'output'
+
+tmp_folder = input_folder+"tmp/"
+
+output_folder = 'output/'
+output_cleanfolder = output_folder+"clean/"
+output_cleanmetrics = output_cleanfolder+"metrics.csv"
 # output_path_clean = 'OutputClean/'
 # output_gts_clear = 'OutputCleanGt/'
 # output_gts_noised = 'OutputNoisedGt/'
@@ -37,6 +43,21 @@ output_path = 'output'
 # path_clean_classification = f"{output_gts_clear}classification/D0_P0_R0_I0_U0_P0_[V0,N0,M0(0)]"
 
 """
+Logging
+"""
+logging_folder = "logging/"
+
+
+
+
+
+
+
+
+
+
+
+"""
 Preprocessing and performance parameters
 """
 features = ['category', 'made_sla', 'knowledge', 'u_priority_confirmation', 'priority',
@@ -47,10 +68,7 @@ date_format = '%d/%m/%Y %H:%M'
 noMagnitudeTypes = ["enum", "boolean"]
 # alpha = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 
-"""
-Logging
-"""
-logging_folder = "logging/"
+
 
 # """
 # Classification
