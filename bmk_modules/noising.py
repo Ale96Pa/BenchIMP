@@ -358,14 +358,14 @@ def noising_single_run(params):
                         format='%(asctime)s - %(levelname)s: %(message)s')
     features, mess_percentage, combination_ratio, original_dataset,logID = params
 
+    noisingID = filename_generation(features, mess_percentage, combination_ratio, "#")
+    logging.info("[START NOISING], experiment %s - %s", logID, noisingID)
+
     duration_noised_datasets = []
     if "duration_phase" in features:
-        logging.info("[START NOISING] duration, experiment %s",
-                    filename_generation(features, mess_percentage, combination_ratio, "#"))
         duration_noised_datasets = noising_orchestrator(original_dataset, mess_percentage,
                                                         combination_ratio, ["duration_phase"],
                                                         features, in_memory, True, logID)
-        logging.info("[END NOISING]")
     logs_by_case = []
     if not duration_noised_datasets == []:
         for duration_noised_dataset in duration_noised_datasets:
@@ -386,11 +386,11 @@ def noising_single_run(params):
         param_feat_filename = param_feat.copy()
         if "duration_phase" in param_feat:
             param_feat.remove("duration_phase")
-        logging.info("[START NOISING] test %s", filename_generation(features, mess_percentage, combination_ratio, "#"))
         noised_datasets = noising_orchestrator(log_by_case, mess_percentage,
                                                combination_ratio, param_feat, param_feat_filename,
                                                in_memory, False, logID)
-        logging.info("[END NOISING]")
+    
+    logging.info("[END NOISING], experiment %s - %s", logID, noisingID)
 
 
 def noising_main(original_dataset):
@@ -412,7 +412,5 @@ def noising_main(original_dataset):
                 for combination_ratio in combination_ratios:
                     noising_params.append([features, mess_percentage, combination_ratio, original_dataset,logID])
     
-    # noising_single_run(noising_params[0])
-    logging.info("---Parameters collected: START NOISING BENCHMARK---")
     with ProcessPool(max_workers=config.num_cores) as pool:
         process = pool.map(noising_single_run, noising_params)

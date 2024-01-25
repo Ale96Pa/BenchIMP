@@ -19,4 +19,5 @@ def sample_log(input_file, sampling_percentage, outfolder):
     
     outfilename = input_file.split("/")
     clean_dataset.to_csv(outfolder+outfilename[len(outfilename)-1], index=False)
-    return clean_dataset
+    return
+    # return clean_dataset

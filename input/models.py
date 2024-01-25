@@ -1,53 +1,42 @@
-import numpy as np
 import pandas as pd
-
-import random
-### TODO: gt1, gt2
 
 class Models:
 
     """
     Ground Truth 1 (GT1)
-    Cost of non-compliance of each trace according to [Kieninger]
+    Cost of each trace according to [Kieninger]
     [Kieninger] Axel Kieninger, Florian Berghoff, Hansj ̈org Fromm, and Gerhard Satzger.
     Simulation-Based Quantification of Business Impacts Caused by Service Incidents.
     """
     def gt1(log, log_by_case, case_k, fract=1):
-        # df_original = log
-        # df_log_case = log_by_case[[case_k, "trace"]]
-        # grouped_by_case = df_original.groupby([case_k])
-        # case_ids = set(df_original[case_k].to_list())
-        # l_dict = []
+        extra_work={}
+        case_ids = set(log[case_k].to_list())
+        grouped_by_case = log.groupby([case_k])
+        for caseID in case_ids:
+            single_case_df = grouped_by_case.get_group(caseID)
+            trace_id = single_case_df[case_k].to_list()[0]
+            trace = log.query(case_k + " == '" + str(trace_id) + "'")["event"].to_list()
 
-        # for caseID in case_ids:
-        #     single_case_df = grouped_by_case.get_group(caseID)
-        #     trace_id = single_case_df[case_k].to_list()[0]
+            numN = abs(trace.count('N')-1)
+            numA = abs(trace.count('A')-2)
+            numW = abs(trace.count('W')-1)
+            numR = abs(trace.count('R')-1)
+            numC = abs(trace.count('C')-1)
 
-        #     trace = df_log_case.query(case_k + " == '" + str(trace_id) + "'")["trace"].to_string()
-        #     activities = trace.split(";")
-        #     durations = single_case_df['duration_phase'].to_list()
-
-        #     avg_duration = sum(durations) / len(durations)
-
-        #     cost = 0
-        #     counter_miss = 0
-        #     for i in range(0, len(activities)):
-        #         if "s" in activities[i]:
-        #             cost += avg_duration
-        #             counter_miss += 1
-        #         elif "r" in activities[i] or "m" in activities[i]:
-        #             cost += round(durations[i - counter_miss - 1], 2)
-        #     l_dict.append({case_k: trace_id, "gt1_" + str(fract): abs(cost)})
-        # return pd.DataFrame(l_dict)
+            extra_work[caseID] = [len(trace),sum([numN,numA,numW,numR,numC])]
+        
         l_dict = []
         for index, row in log_by_case.iterrows():
             num_employee = row['reassignment_count'] + 1
-            impact = row['preproc_impact']
-            cost = 2.67 * int(num_employee) * impact * random.randint(1,5)
-            l_dict.append({case_k: row[case_k], "gt1": cost * fract})
-            # l_dict.append({case_k: row[case_k], "gt1_" + str(fract): cost * fract})
-        return pd.DataFrame(l_dict)
+            duration = row['duration_process']
+            incID = row[case_k]
 
+            tot_activities = extra_work[incID][0]
+            extra_activities = extra_work[incID][1]
+
+            cost = ((int(num_employee) * duration)/tot_activities)*extra_activities
+            l_dict.append({case_k: row[case_k], "gt1": cost * fract})
+        return pd.DataFrame(l_dict)
 
     """
     Ground Truth 2 (GT2)
@@ -57,39 +46,33 @@ class Models:
     for Distributed Systems and Networks (POLICY'06). IEEE, 2006. p. 9 pp.-95.
     """
     def gt2(log, log_by_case, case_k, fract=1):
-        # df_original = log
-        # df_log_case = log_by_case[[case_k, "trace"]]
-        # grouped_by_case = df_original.groupby([case_k])
-        # case_ids = set(df_original[case_k].to_list())
-        # l_dict = []
+        extra_work={}
+        case_ids = set(log[case_k].to_list())
+        grouped_by_case = log.groupby([case_k])
+        for caseID in case_ids:
+            single_case_df = grouped_by_case.get_group(caseID)
+            trace_id = single_case_df[case_k].to_list()[0]
+            trace = log.query(case_k + " == '" + str(trace_id) + "'")["event"].to_list()
 
-        # for caseID in case_ids:
-        #     single_case_df = grouped_by_case.get_group(caseID)
-        #     trace_id = single_case_df[case_k].to_list()[0]
+            numN = abs(trace.count('N')-1)
+            numA = abs(trace.count('A')-2)
+            numW = abs(trace.count('W')-1)
+            numR = abs(trace.count('R')-1)
+            numC = abs(trace.count('C')-1)
 
-        #     trace = df_log_case.query(case_k + " == '" + str(trace_id) + "'")["trace"].to_string()
-        #     activities = trace.split(";")
-        #     durations = single_case_df['duration_phase'].to_list()
-
-        #     activities = [item for item in activities if "s" not in item]
-        #     prio_val = np.nanmax(log_by_case["preproc_priority"].to_list())
-
-        #     cost = 0
-        #     for i in range(0, len(activities)):
-        #         if len(activities[i]) > 1 and i > 0:
-        #             cost = round(durations[i - 1] * prio_val, 2)
-        #     l_dict.append({case_k: trace_id, "gt2_" + str(fract): abs(cost)})
-
-        # return pd.DataFrame(l_dict)
-    
-    
+            extra_work[caseID] = [len(trace),sum([numN,numA,numW,numR,numC])]
+        
         l_dict = []
         for index, row in log_by_case.iterrows():
-            num_employee = row['reassignment_count'] + 1
-            impact = row['preproc_impact']
-            cost = 2.67 * int(num_employee) * impact * random.randint(5,9)
+            duration = row['duration_process']
+            priority = row['preproc_priority']
+            incID = row[case_k]
+
+            tot_activities = extra_work[incID][0]
+            extra_activities = extra_work[incID][1]
+
+            cost = (duration/tot_activities)*extra_activities*priority
             l_dict.append({case_k: row[case_k], "gt2": cost * fract})
-            # l_dict.append({case_k: row[case_k], "gt2_" + str(fract): cost * fract})
         return pd.DataFrame(l_dict)
 
 
@@ -106,7 +89,6 @@ class Models:
             num_employee = row['reassignment_count'] + 1
             cost = round(duration_process * num_employee)
             l_dict.append({case_k: row[case_k], "gt3": cost * fract})
-            # l_dict.append({case_k: row[case_k], "gt3_" + str(fract): cost * fract})
         return pd.DataFrame(l_dict)
 
 
@@ -123,5 +105,4 @@ class Models:
             impact = row['preproc_impact']
             cost = 2.67 * int(num_employee) * impact
             l_dict.append({case_k: row[case_k], "gt4": cost * fract})
-            # l_dict.append({case_k: row[case_k], "gt4_" + str(fract): cost * fract})
         return pd.DataFrame(l_dict)

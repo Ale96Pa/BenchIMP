@@ -33,14 +33,6 @@ output_noisedresult_folder = output_noisedfolder+"results/"
 
 output_noisemetrics = "metrics.csv"
 output_noiseranks = "ranks.csv"
-# output_path_clean = 'OutputClean/'
-# output_gts_clear = 'OutputCleanGt/'
-# output_gts_noised = 'OutputNoisedGt/'
-
-# enriched_log = f'{input_path}/EnrichedLog.csv'
-# sampled_log = f'{input_path}/SampledLog.csv'
-# output_logByCase = f'{output_path}/NoisedLogByCase'
-# output_noisedLogs = f'{output_path}/NoisedLogs'
 
 # parameters_gts = f'models_parameters'
 # output_path_models = f"models"
@@ -78,42 +70,42 @@ features_type = ["float", "enum", "integer", "enum", "enum"]
 
 
 
-"""
-Preprocessing and performance parameters
-"""
-features = ['category', 'made_sla', 'knowledge', 'u_priority_confirmation', 'priority',
-            'reassignment_count', 'reopen_count']
-date_format = '%d/%m/%Y %H:%M'
-noMagnitudeTypes = ["enum", "boolean"]
-# alpha = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+# """
+# Preprocessing and performance parameters
+# """
+# features = ['category', 'made_sla', 'knowledge', 'u_priority_confirmation', 'priority',
+#             'reassignment_count', 'reopen_count']
+# date_format = '%d/%m/%Y %H:%M'
+# noMagnitudeTypes = ["enum", "boolean"]
+# # alpha = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 
 
+
+# # """
+# # Classification
+# # """
+# # round_factor = 20
+# # round = 0
 
 # """
-# Classification
+# Noise Validation Setup
 # """
-# round_factor = 20
-# round = 0
+# noising_validation_output = "./NoisingValidationOutput"
+# noising_validation_report = "./NoisingValidationReport"
+# only_validation = True
+# files_path_logs = "./Output/NoisedLogByCase"
+# files_path_logByCase = "./Output/NoisedLogs"
+# valOut_path = "./OutputNoisingValidation"
 
-"""
-Noise Validation Setup
-"""
-noising_validation_output = "./NoisingValidationOutput"
-noising_validation_report = "./NoisingValidationReport"
-only_validation = True
-files_path_logs = "./Output/NoisedLogByCase"
-files_path_logByCase = "./Output/NoisedLogs"
-valOut_path = "./OutputNoisingValidation"
-
-"""
-Analyses Setup
-"""
-path_clean_gt = "OutputCleanGt/benchmark/GtFull.csv"
-# path_noised_gts = f"{output_gts_noised}benchmark"
-flag_noised_gt_values = [False]
-metrics = ["mae", "mse", "median"]
-models_name = ["LR", "ETR", "CP"]
-gts_name = ["Gt1", "Gt2", "Gt3", "Gt4", "Gt5"]
-colors_model = ["#66c2a5", "#8da0cb", "#fc8d62"]
-colors_gt = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00']
-features = ["duration_phase", "preproc_priority", "reassignment_count", "preproc_impact", "preproc_urgency"]
+# """
+# Analyses Setup
+# """
+# path_clean_gt = "OutputCleanGt/benchmark/GtFull.csv"
+# # path_noised_gts = f"{output_gts_noised}benchmark"
+# flag_noised_gt_values = [False]
+# metrics = ["mae", "mse", "median"]
+# models_name = ["LR", "ETR", "CP"]
+# gts_name = ["Gt1", "Gt2", "Gt3", "Gt4", "Gt5"]
+# colors_model = ["#66c2a5", "#8da0cb", "#fc8d62"]
+# colors_gt = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00']
+# features = ["duration_phase", "preproc_priority", "reassignment_count", "preproc_impact", "preproc_urgency"]

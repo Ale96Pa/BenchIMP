@@ -1,4 +1,4 @@
-import glob, os, sys, warnings, logging
+import os, warnings, logging
 import pandas as pd
 from pebble import ProcessPool
 
@@ -6,7 +6,7 @@ warnings.filterwarnings('ignore')
 
 import config
 from bmk_modules.sampling import sample_log
-from bmk_modules.utils import format_dataset_by_incidents,filename_generation
+from bmk_modules.utils import format_dataset_by_incidents
 from bmk_modules.run_models import cost_computation
 from bmk_modules.evaluation import compare_models, multi_metric_ranks
 from bmk_modules.noising import noising_main
@@ -20,6 +20,7 @@ output_cleanfolder=config.output_cleanfolder
 output_cleanmetrics=config.output_cleanmetrics
 output_cleanranks=config.output_cleanranks
 
+output_noisedfolder=config.output_noisedfolder
 output_noisedlog_folder=config.output_noisedlog_folder
 output_noisedlogbycase_folder=config.output_noisedlogbycase_folder
 output_noisedresult_folder=config.output_noisedresult_folder
@@ -54,7 +55,8 @@ def run_single_benchmark(params):
     df_logbycase = pd.read_csv(log_by_case)
     df_enrichednoiselog = cost_computation(inputlog_event,df_logbycase,output_noisefolder)
     df_metrics = compare_models(df_enrichednoiselog,"incident_id", output_metrics)
-    test = multi_metric_ranks(df_metrics,output_ranks.replace(".csv",""))
+    multi_metric_ranks(df_metrics,output_ranks.replace(".csv",""))
+    logging.info("[END experiment]: %s - %s",log_by_case, output_noisefolder)
 
 if __name__ == '__main__':
     if not os.path.exists(loggingfolder): os.makedirs(loggingfolder)
@@ -64,8 +66,10 @@ if __name__ == '__main__':
     if not os.path.exists(tmp_folder): os.mkdir(tmp_folder)
     if not os.path.exists(output_folder): os.mkdir(output_folder)
     if not os.path.exists(output_cleanfolder): os.mkdir(output_cleanfolder)
+    if not os.path.exists(output_noisedfolder): os.mkdir(output_noisedfolder)
     if not os.path.exists(output_noisedresult_folder): os.mkdir(output_noisedresult_folder)
 
+    # TODO
     if perform_augmentation:
         logging.info("[START AUGMENTATION]")
         
@@ -76,25 +80,26 @@ if __name__ == '__main__':
     if perform_sampling:
         logging.info("[START SAMPLING]")
         for logfile in os.listdir(input_logfolder):
-            sampled_dataset = sample_log(input_logfolder+logfile,sampling_percentage,tmp_folder)
+            sample_log(input_logfolder+logfile,sampling_percentage,tmp_folder)
             logging.info("Sampled: %s", logfile)
         logging.info("[END SAMPLING]")
     else:
         logging.info("No sampling")
 
     for logsampled in os.listdir(tmp_folder):
+        logging.info("[START CLEAN CASE]")
         if "0" in logsampled: continue
         log_by_case = format_dataset_by_incidents(tmp_folder+logsampled, "incident_id")
-        test_name = filename_generation([], 0, [0,0,0], 0)
         df_enrichedcleanlog = cost_computation(tmp_folder+logsampled,log_by_case,output_cleanfolder)
         df_metrics = compare_models(df_enrichedcleanlog,"incident_id",output_cleanmetrics.replace(".csv",logsampled))
         test = multi_metric_ranks(df_metrics,output_cleanranks.replace(".csv",logsampled))
-
+        logging.info("[END CLEAN CASE]")
 
     for logfile in os.listdir(input_logfolder):
         if "0" in logfile: continue
+        logging.info("[START NOISING] %s", logfile)
         noising_main(input_logfolder+logfile)
-
+        logging.info("[END NOISING] %s", logfile)
 
     params_bmk=[]
     for noisedfolderbycase in os.listdir(output_noisedlogbycase_folder):
@@ -118,8 +123,6 @@ if __name__ == '__main__':
                         event_log = output_noisedlog_folder+noisedfolderevent+"/"+noisedlogevent
                 params_bmk.append([input_log, event_log, result_folder])
     
-    # run_single_benchmark(params_bmk[0])
-    logging.info("---Parameters collected: START BENCHMARKING ---")
     with ProcessPool(max_workers=config.num_cores) as pool:
         process = pool.map(run_single_benchmark, params_bmk)
 
