@@ -1,7 +1,0 @@
-model-gt,Model,Gt,mae_n
-gt1-gt3,gt1,gt3,0.086
-gt3-gt4,gt3,gt4,0.085
-gt2-gt3,gt2,gt3,0.08
-gt1-gt2,gt1,gt2,0.048
-gt1-gt4,gt1,gt4,0.047
-gt2-gt4,gt2,gt4,0.022
