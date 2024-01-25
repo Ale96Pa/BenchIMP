@@ -3,7 +3,8 @@ from input.models import Models
 
 def cost_computation(eventlog, log_by_case, outfolder):
     
-    log = pd.read_csv(eventlog)
+    log=None
+    if eventlog!="": log = pd.read_csv(eventlog)
 
     gt1 = Models.gt1(log, log_by_case, 'incident_id')
     gt2 = Models.gt2(log, log_by_case, 'incident_id')
@@ -24,8 +25,12 @@ def cost_computation(eventlog, log_by_case, outfolder):
     #     filename_gt_full = f"GtFull.csv"
 
     df_full = pd.merge(log_by_case, df_gts, how='inner', on=['incident_id'])
-    outfilename = eventlog.split("/")
-    df_full.to_csv(outfolder+outfilename[len(outfilename)-1], index=False)
+    if eventlog!="": 
+        outfilename = eventlog.split("/")
+        df_full.to_csv(outfolder+outfilename[len(outfilename)-1], index=False)
+    else:
+        folderparams = outfolder.split("/")
+        df_full.to_csv(outfolder+folderparams[len(folderparams)-2]+".csv", index=False)
     return df_full
 
 

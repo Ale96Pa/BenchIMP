@@ -1,0 +1,7 @@
+model-gt,Model,Gt,MeasuresArray,ScoresArray,FinalScore,FinalPosition,MaximumRelativeNormalizedScore,MaximumAbsoluteNormalizedScore
+gt1-gt3,gt1,gt3,"['mse_n', 'mae_n', 'median_err_n']","[1, 2, 1]",4,1,0.7894736842105263,0.7777777777777778
+gt3-gt4,gt3,gt4,"['mse_n', 'mae_n', 'median_err_n']","[1, 1, 3]",5,2,0.736842105263158,0.7222222222222222
+gt2-gt3,gt2,gt3,"['mse_n', 'mae_n', 'median_err_n']","[2, 3, 2]",7,3,0.631578947368421,0.6111111111111112
+gt1-gt2,gt1,gt2,"['mse_n', 'mae_n', 'median_err_n']","[3, 4, 4]",11,4,0.42105263157894735,0.38888888888888884
+gt1-gt4,gt1,gt4,"['mse_n', 'mae_n', 'median_err_n']","[3, 5, 5]",13,5,0.3157894736842105,0.2777777777777778
+gt2-gt4,gt2,gt4,"['mse_n', 'mae_n', 'median_err_n']","[4, 6, 6]",16,6,0.1578947368421053,0.11111111111111116

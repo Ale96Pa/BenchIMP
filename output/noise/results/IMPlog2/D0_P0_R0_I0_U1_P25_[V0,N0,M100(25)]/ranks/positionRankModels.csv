@@ -1,0 +1,4 @@
+Model,PositionsArray,Median,Mean,VariationField,Deviance,Variance,StandardDeviation,CoefficientVariation
+gt3,"[5, 5]",5.0,9.333333333333334,9,44.666666666666664,22.333333333333332,4.725815626252608,
+gt1,"[4, 11, 13]",11.0,5.0,0,0.0,0.0,0.0,
+gt2,"[7, 16]",11.5,11.5,9,40.5,40.5,6.363961030678928,

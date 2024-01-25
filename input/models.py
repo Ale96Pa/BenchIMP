@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+import random
 ### TODO: gt1, gt2
 
 class Models:
@@ -42,8 +43,9 @@ class Models:
         for index, row in log_by_case.iterrows():
             num_employee = row['reassignment_count'] + 1
             impact = row['preproc_impact']
-            cost = 2.67 * int(num_employee) * impact
-            l_dict.append({case_k: row[case_k], "gt1_" + str(fract): cost * fract})
+            cost = 2.67 * int(num_employee) * impact * random.randint(1,5)
+            l_dict.append({case_k: row[case_k], "gt1": cost * fract})
+            # l_dict.append({case_k: row[case_k], "gt1_" + str(fract): cost * fract})
         return pd.DataFrame(l_dict)
 
 
@@ -79,12 +81,15 @@ class Models:
         #     l_dict.append({case_k: trace_id, "gt2_" + str(fract): abs(cost)})
 
         # return pd.DataFrame(l_dict)
+    
+    
         l_dict = []
         for index, row in log_by_case.iterrows():
             num_employee = row['reassignment_count'] + 1
             impact = row['preproc_impact']
-            cost = 2.67 * int(num_employee) * impact
-            l_dict.append({case_k: row[case_k], "gt2_" + str(fract): cost * fract})
+            cost = 2.67 * int(num_employee) * impact * random.randint(5,9)
+            l_dict.append({case_k: row[case_k], "gt2": cost * fract})
+            # l_dict.append({case_k: row[case_k], "gt2_" + str(fract): cost * fract})
         return pd.DataFrame(l_dict)
 
 
@@ -100,7 +105,8 @@ class Models:
             duration_process = row['duration_process']
             num_employee = row['reassignment_count'] + 1
             cost = round(duration_process * num_employee)
-            l_dict.append({case_k: row[case_k], "gt3_" + str(fract): cost * fract})
+            l_dict.append({case_k: row[case_k], "gt3": cost * fract})
+            # l_dict.append({case_k: row[case_k], "gt3_" + str(fract): cost * fract})
         return pd.DataFrame(l_dict)
 
 
@@ -116,5 +122,6 @@ class Models:
             num_employee = row['reassignment_count'] + 1
             impact = row['preproc_impact']
             cost = 2.67 * int(num_employee) * impact
-            l_dict.append({case_k: row[case_k], "gt4_" + str(fract): cost * fract})
+            l_dict.append({case_k: row[case_k], "gt4": cost * fract})
+            # l_dict.append({case_k: row[case_k], "gt4_" + str(fract): cost * fract})
         return pd.DataFrame(l_dict)

@@ -1,0 +1,7 @@
+model-gt,Model,Gt,median_err_n
+gt1-gt3,gt1,gt3,0.06
+gt2-gt3,gt2,gt3,0.05
+gt1-gt4,gt1,gt4,0.034
+gt1-gt2,gt1,gt2,0.034
+gt3-gt4,gt3,gt4,0.03
+gt2-gt4,gt2,gt4,0.013

@@ -1,10 +1,7 @@
 """
 Benchmark parameters
 """
-num_cores = 20
-ratio_step = 20
-messing_step = 25
-magnitude_step = 25
+num_cores = 10
 
 sampling_percentage = 20
 
@@ -12,6 +9,7 @@ perform_sampling = False
 perform_augmentation = False
 
 noising_flag = False
+in_memory = False
 
 """
 File Management parameters
@@ -26,6 +24,15 @@ tmp_folder = input_folder+"tmp/"
 output_folder = 'output/'
 output_cleanfolder = output_folder+"clean/"
 output_cleanmetrics = output_cleanfolder+"metrics.csv"
+output_cleanranks = output_cleanfolder+"ranks.csv"
+
+output_noisedfolder = output_folder+"noise/"
+output_noisedlogbycase_folder = output_noisedfolder+"logbycase/"
+output_noisedlog_folder = output_noisedfolder+"log/"
+output_noisedresult_folder = output_noisedfolder+"results/"
+
+output_noisemetrics = "metrics.csv"
+output_noiseranks = "ranks.csv"
 # output_path_clean = 'OutputClean/'
 # output_gts_clear = 'OutputCleanGt/'
 # output_gts_noised = 'OutputNoisedGt/'
@@ -47,8 +54,22 @@ Logging
 """
 logging_folder = "logging/"
 
+"""
+Multi-Metric Analysis
+"""
+cutoff = 20
+cutoff_factor = 3
 
 
+"""
+Noising
+"""
+noise_gt = False
+ratio_step = 20
+messing_step = 25
+magnitude_step = 25
+features_list = ["duration_phase", "preproc_priority", "reassignment_count", "preproc_impact", "preproc_urgency"]
+features_type = ["float", "enum", "integer", "enum", "enum"]
 
 
 
@@ -62,8 +83,6 @@ Preprocessing and performance parameters
 """
 features = ['category', 'made_sla', 'knowledge', 'u_priority_confirmation', 'priority',
             'reassignment_count', 'reopen_count']
-features_list = ["duration_phase", "preproc_priority", "reassignment_count", "preproc_impact", "preproc_urgency"]
-features_type = ["float", "enum", "integer", "enum", "enum"]
 date_format = '%d/%m/%Y %H:%M'
 noMagnitudeTypes = ["enum", "boolean"]
 # alpha = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
