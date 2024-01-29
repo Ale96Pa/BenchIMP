@@ -354,8 +354,6 @@ def select_features(combination):
 
 
 def noising_single_run(params):
-    logging.basicConfig(filename=logging_folder + "noising.log", level=logging.DEBUG,
-                        format='%(asctime)s - %(levelname)s: %(message)s')
     features, mess_percentage, combination_ratio, original_dataset,logID = params
 
     noisingID = filename_generation(features, mess_percentage, combination_ratio, "#")
@@ -394,6 +392,8 @@ def noising_single_run(params):
 
 
 def noising_main(original_dataset):
+    logging.basicConfig(filename=logging_folder + "noising.log", level=logging.DEBUG,
+                        format='%(asctime)s - %(levelname)s: %(message)s')
     logpath = original_dataset.split("/")
     logID = logpath[len(logpath)-1].replace(".csv","")
     

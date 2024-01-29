@@ -5,8 +5,8 @@ num_cores = 10
 
 sampling_percentage = 20
 
-perform_sampling = False
-perform_augmentation = False
+perform_sampling = True
+perform_augmentation = True
 
 noising_flag = False
 in_memory = False
@@ -19,7 +19,7 @@ input_logfolder=input_folder+"logs/"
 input_reallog = input_logfolder+"IMPlog.csv"
 input_models = input_folder+"models.py"
 
-tmp_folder = input_folder+"tmp/"
+tmp_folder = input_folder+"smp/"
 
 output_folder = 'output/'
 output_cleanfolder = output_folder+"clean/"
@@ -62,6 +62,7 @@ messing_step = 25
 magnitude_step = 25
 features_list = ["duration_phase", "preproc_priority", "reassignment_count", "preproc_impact", "preproc_urgency"]
 features_type = ["float", "enum", "integer", "enum", "enum"]
+features_augment = ["duration_process", "preproc_priority", "reassignment_count", "preproc_impact", "preproc_urgency"]
 
 
 

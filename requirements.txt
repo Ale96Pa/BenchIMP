@@ -3,4 +3,4 @@ networkx
 matplotlib
 scikit-learn
 pebble
-numpy
+tabular_augmentation

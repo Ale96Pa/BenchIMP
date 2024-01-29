@@ -5,6 +5,7 @@ from pebble import ProcessPool
 warnings.filterwarnings('ignore')
 
 import config
+from bmk_modules.augmentation import augment_log
 from bmk_modules.sampling import sample_log
 from bmk_modules.utils import format_dataset_by_incidents
 from bmk_modules.run_models import cost_computation
@@ -31,6 +32,8 @@ perform_augmentation=config.perform_augmentation
 perform_sampling=config.perform_sampling
 sampling_percentage=config.sampling_percentage
 
+features_augment=config.features_augment
+
 def nan_filter(df_full, log_by_case):
     original_bycase_incidents = set(log_by_case['incident_id'].values)
     log_by_case.dropna(inplace=True)
@@ -45,9 +48,6 @@ def nan_filter_bycase(log_by_case):
     log_by_case.dropna(inplace=True)
 
 def run_single_benchmark(params):
-    logging.basicConfig(filename=loggingfolder+"main_bmk", level=logging.DEBUG,
-                        format='%(asctime)s - %(levelname)s: %(message)s')
-    
     log_by_case, inputlog_event, output_noisefolder = params
     output_metrics = output_noisefolder+output_noisemetrics
     output_ranks = output_noisefolder+output_noiseranks
@@ -60,8 +60,8 @@ def run_single_benchmark(params):
 
 if __name__ == '__main__':
     if not os.path.exists(loggingfolder): os.makedirs(loggingfolder)
-    logging.basicConfig(filename=loggingfolder+"main_bmk", level=logging.DEBUG, filemode="w",
-                        format='%(asctime)s - %(levelname)s: %(message)s')
+    logging.basicConfig(filename=loggingfolder+"main_bmk.log", level=logging.DEBUG, 
+                        filemode="w", format='%(asctime)s - %(levelname)s: %(message)s')
     
     if not os.path.exists(tmp_folder): os.mkdir(tmp_folder)
     if not os.path.exists(output_folder): os.mkdir(output_folder)
@@ -69,36 +69,47 @@ if __name__ == '__main__':
     if not os.path.exists(output_noisedfolder): os.mkdir(output_noisedfolder)
     if not os.path.exists(output_noisedresult_folder): os.mkdir(output_noisedresult_folder)
 
-    # TODO
-    if perform_augmentation:
-        logging.info("[START AUGMENTATION]")
-        
-        logging.info("[END AUGMENTATION]")
-    else:
-        logging.info("No augmentation")
-
+    actual_input_folder=input_logfolder
     if perform_sampling:
         logging.info("[START SAMPLING]")
         for logfile in os.listdir(input_logfolder):
             sample_log(input_logfolder+logfile,sampling_percentage,tmp_folder)
             logging.info("Sampled: %s", logfile)
+        
+        actual_input_folder=tmp_folder
         logging.info("[END SAMPLING]")
     else:
+        actual_input_folder=input_logfolder
         logging.info("No sampling")
 
-    for logsampled in os.listdir(tmp_folder):
-        logging.info("[START CLEAN CASE]")
-        if "0" in logsampled: continue
-        log_by_case = format_dataset_by_incidents(tmp_folder+logsampled, "incident_id")
-        df_enrichedcleanlog = cost_computation(tmp_folder+logsampled,log_by_case,output_cleanfolder)
+    if perform_augmentation:
+        logging.info("[START AUGMENTATION]")
+        considered_feat = []
+        count_sample=1
+        for feature in features_augment:
+            feature_target = feature
+            features_training = [ele for ele in features_augment if ele != feature]
+            for logfile in os.listdir(actual_input_folder):
+                if "0" not in logfile: continue
+                augment_log(actual_input_folder+logfile, actual_input_folder+"IMPlog"+str(count_sample)+".csv", 
+                            features_training, feature_target)
+                logging.info("Augmented %s, target: %s", logfile, feature)
+                count_sample+=1
+        logging.info("[END AUGMENTATION]")
+    else:
+        logging.info("No augmentation")
+    
+    for logsampled in os.listdir(actual_input_folder):
+        logging.info("[START CLEAN CASE] %s", logsampled)
+        log_by_case = format_dataset_by_incidents(actual_input_folder+logsampled, "incident_id")
+        df_enrichedcleanlog = cost_computation(actual_input_folder+logsampled,log_by_case,output_cleanfolder)
         df_metrics = compare_models(df_enrichedcleanlog,"incident_id",output_cleanmetrics.replace(".csv",logsampled))
         test = multi_metric_ranks(df_metrics,output_cleanranks.replace(".csv",logsampled))
-        logging.info("[END CLEAN CASE]")
+        logging.info("[END CLEAN CASE] %s", logsampled)
 
-    for logfile in os.listdir(input_logfolder):
-        if "0" in logfile: continue
+    for logfile in os.listdir(actual_input_folder):
         logging.info("[START NOISING] %s", logfile)
-        noising_main(input_logfolder+logfile)
+        noising_main(actual_input_folder+logfile)
         logging.info("[END NOISING] %s", logfile)
 
     params_bmk=[]
