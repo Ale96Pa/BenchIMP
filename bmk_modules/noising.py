@@ -1,4 +1,5 @@
 import logging, random, os
+import pandas as pd
 from pebble import ProcessPool
 
 from bmk_modules.utils import format_dataset_by_incidents, filename_generation
@@ -246,10 +247,10 @@ indexes of the noised rows.
 """
 def save_output(features, mess_percentage, combination, magnitude, dataset, 
                 flag_logs, noised_entries, methodology_one, methodology_two, logID):
-    if flag_logs is False:
-        output_path = output_logByCase+logID+"/"
-    else:
+    if flag_logs:
         output_path = output_noisedLogs+logID+"/"
+    else:
+        output_path = output_logByCase+logID+"/"
     file_name = f"{filename_generation(features, mess_percentage, combination, magnitude)}"
     
     if not os.path.exists(output_path): os.makedirs(output_path)
@@ -269,8 +270,8 @@ def save_output(features, mess_percentage, combination, magnitude, dataset,
             counter += 1
 
 
-def noising_orchestrator(original_dataset, mess_percentage, combination_ratio, features, features_filename, in_memory: bool,
-                 flag_logs, logID):
+def noising_orchestrator(original_dataset, mess_percentage, combination_ratio, 
+                         features, in_memory: bool, flag_logs, logID):
     results = []
     dirty_dataset = original_dataset.copy(deep=True)
     number_entries = round((mess_percentage * dirty_dataset.shape[0]) / 100)
@@ -296,8 +297,9 @@ def noising_orchestrator(original_dataset, mess_percentage, combination_ratio, f
             for magnitude in range(magnitude_step, 60, magnitude_step):
                 inaccurate_value_generator(original_dataset, dirty_dataset,
                                            features, magnitude, indexes)
+
                 if not in_memory:
-                    save_output(features_filename, mess_percentage, combination_ratio,
+                    save_output(features, mess_percentage, combination_ratio,
                                 magnitude, dirty_dataset, flag_logs, noised_entries, 
                                 methodology_one, methodology_two, logID)
 
@@ -305,16 +307,17 @@ def noising_orchestrator(original_dataset, mess_percentage, combination_ratio, f
                 dirty_dataset = dataset_backup.copy(deep=True)
         else:
             if not in_memory:
-                save_output(features_filename, mess_percentage, combination_ratio, 
+                save_output(features, mess_percentage, combination_ratio, 
                             0, dirty_dataset, flag_logs, noised_entries, 
                             methodology_one, methodology_two, logID)
             results.append(dirty_dataset)
     else:
         if not in_memory:
-            save_output(features_filename, mess_percentage, combination_ratio, 0, 
+            save_output(features, mess_percentage, combination_ratio, 0, 
                         dirty_dataset, flag_logs, noised_entries, 
                         methodology_one, methodology_two, logID)
         results.append(dirty_dataset)
+    
     return results
 
 
@@ -359,35 +362,42 @@ def noising_single_run(params):
     noisingID = filename_generation(features, mess_percentage, combination_ratio, "#")
     logging.info("[START NOISING], experiment %s - %s", logID, noisingID)
 
-    duration_noised_datasets = []
-    if "duration_phase" in features:
-        duration_noised_datasets = noising_orchestrator(original_dataset, mess_percentage,
-                                                        combination_ratio, ["duration_phase"],
-                                                        features, in_memory, True, logID)
-    logs_by_case = []
-    if not duration_noised_datasets == []:
-        for duration_noised_dataset in duration_noised_datasets:
-            log_by_case = format_dataset_by_incidents(duration_noised_dataset,"incident_id")
-            logs_by_case.append(log_by_case)
-    else:
-        log_by_case = format_dataset_by_incidents(original_dataset,"incident_id")
-        logs_by_case.append(log_by_case)
-
-    if len(duration_noised_datasets) == 0 and not len(logs_by_case) == 1:
-        raise Exception("Sorry, no numbers below zero")
-    elif len(duration_noised_datasets) > 1 and not len(duration_noised_datasets) == len(
-            logs_by_case):
-        raise Exception("Sorry, no numbers below zero")
-
-    for log_by_case in logs_by_case:
-        param_feat = features.copy()
-        param_feat_filename = param_feat.copy()
-        if "duration_phase" in param_feat:
-            param_feat.remove("duration_phase")
-        noised_datasets = noising_orchestrator(log_by_case, mess_percentage,
-                                               combination_ratio, param_feat, param_feat_filename,
-                                               in_memory, False, logID)
+    original_df = pd.read_csv(original_dataset)
+    duration_noised_datasets = noising_orchestrator(original_df, mess_percentage,
+                        combination_ratio, features, in_memory, True, logID)
     
+    # duration_noised_datasets = []
+    # if "duration_phase" in features:
+    #     original_df = pd.read_csv(original_dataset)
+    #     duration_noised_datasets = noising_orchestrator(original_df, mess_percentage,
+    #                                                     combination_ratio, ["duration_phase"],
+    #                                                     features, in_memory, True, logID)
+
+    # logs_by_case = []
+    # if not duration_noised_datasets == []:
+    #     for duration_noised_dataset in duration_noised_datasets:
+    #         log_by_case = format_dataset_by_incidents(duration_noised_dataset,"incident_id")
+    #         logs_by_case.append(log_by_case)
+    # else:
+    #     log_by_case = format_dataset_by_incidents(original_dataset,"incident_id")
+    #     logs_by_case.append(log_by_case)
+
+    # if len(duration_noised_datasets) == 0 and not len(logs_by_case) == 1:
+    #     logging.error("Sorry, no numbers below zero")
+    #     raise Exception("Sorry, no numbers below zero")
+    # elif len(duration_noised_datasets) > 1 and not len(duration_noised_datasets) == len(
+    #         logs_by_case):
+    #     logging.error("Sorry, no numbers below zero")
+    #     raise Exception("Sorry, no numbers below zero")
+
+    # for log_by_case in logs_by_case:
+    #     param_feat = features.copy()
+    #     param_feat_filename = param_feat.copy()
+    #     if "duration_phase" in param_feat: 
+    #         param_feat = [ele for ele in param_feat if ele != "duration_phase"]
+    #     noised_datasets = noising_orchestrator(log_by_case, mess_percentage,
+    #                                            combination_ratio, param_feat,
+    #                                            in_memory, False, logID)
     logging.info("[END NOISING], experiment %s - %s", logID, noisingID)
 
 
@@ -411,6 +421,6 @@ def noising_main(original_dataset):
             for mess_percentage in range(messing_step, 51, messing_step):
                 for combination_ratio in combination_ratios:
                     noising_params.append([features, mess_percentage, combination_ratio, original_dataset,logID])
-    
+
     with ProcessPool(max_workers=config.num_cores) as pool:
         process = pool.map(noising_single_run, noising_params)

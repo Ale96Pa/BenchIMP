@@ -1,10 +1,11 @@
 import pandas as pd
 from input.models import Models
+from bmk_modules.utils import format_dataset_by_incidents
 
-def cost_computation(eventlog, log_by_case, outfolder):
+def cost_computation(eventlog, outfolder):
     
-    log=None
-    if eventlog!="": log = pd.read_csv(eventlog)
+    log = pd.read_csv(eventlog)
+    log_by_case = format_dataset_by_incidents(eventlog, "incident_id")
 
     gt1 = Models.gt1(log, log_by_case, 'incident_id')
     gt2 = Models.gt2(log, log_by_case, 'incident_id')

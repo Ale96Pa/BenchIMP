@@ -10,8 +10,8 @@ The following packages and libraries are required to run the benchmark:
 - sklearn
 - pebble
 - numpy
-- scikit-learn
 - scipy
+- tabular_augmentation
 
 Opting for the benchmark installation with Docker, it automatically installs these requirements in the container.
 
