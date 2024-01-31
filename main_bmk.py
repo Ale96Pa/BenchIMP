@@ -67,43 +67,43 @@ if __name__ == '__main__':
     if not os.path.exists(output_noisedfolder): os.mkdir(output_noisedfolder)
     if not os.path.exists(output_noisedresult_folder): os.mkdir(output_noisedresult_folder)
 
-    # actual_input_folder=input_logfolder
-    # if perform_sampling:
-    #     logging.info("[START SAMPLING]")
-    #     for logfile in os.listdir(input_logfolder):
-    #         sample_log(input_logfolder+logfile,sampling_percentage,tmp_folder)
-    #         logging.info("Sampled: %s", logfile)
+    actual_input_folder=input_logfolder
+    if perform_sampling:
+        logging.info("[START SAMPLING]")
+        for logfile in os.listdir(input_logfolder):
+            sample_log(input_logfolder+logfile,sampling_percentage,tmp_folder)
+            logging.info("Sampled: %s", logfile)
         
-    #     actual_input_folder=tmp_folder
-    #     logging.info("[END SAMPLING]")
-    # else:
-    #     actual_input_folder=input_logfolder
-    #     logging.info("No sampling")
+        actual_input_folder=tmp_folder
+        logging.info("[END SAMPLING]")
+    else:
+        actual_input_folder=input_logfolder
+        logging.info("No sampling")
 
-    # if perform_augmentation:
-    #     logging.info("[START AUGMENTATION]")
-    #     considered_feat = []
-    #     count_sample=1
-    #     for feature in features_augment:
-    #         feature_target = feature
-    #         features_training = [ele for ele in features_augment if ele != feature]
-    #         for logfile in os.listdir(actual_input_folder):
-    #             if "0" not in logfile: continue
-    #             augment_log(actual_input_folder+logfile, actual_input_folder+"IMPlog"+str(count_sample)+".csv", 
-    #                         features_training, feature_target)
-    #             logging.info("Augmented %s, target: %s", logfile, feature)
-    #             count_sample+=1
-    #     logging.info("[END AUGMENTATION]")
-    # else:
-    #     logging.info("No augmentation")
+    if perform_augmentation:
+        logging.info("[START AUGMENTATION]")
+        considered_feat = []
+        count_sample=1
+        for feature in features_augment:
+            feature_target = feature
+            features_training = [ele for ele in features_augment if ele != feature]
+            for logfile in os.listdir(actual_input_folder):
+                if "0" not in logfile: continue
+                augment_log(actual_input_folder+logfile, actual_input_folder+"IMPlog"+str(count_sample)+".csv", 
+                            features_training, feature_target)
+                logging.info("Augmented %s, target: %s", logfile, feature)
+                count_sample+=1
+        logging.info("[END AUGMENTATION]")
+    else:
+        logging.info("No augmentation")
     
-    # for logsampled in os.listdir(actual_input_folder):
-    #     logging.info("[START CLEAN CASE] %s", logsampled)
-    #     log_by_case = format_dataset_by_incidents(actual_input_folder+logsampled, "incident_id")
-    #     df_enrichedcleanlog = cost_computation(actual_input_folder+logsampled,log_by_case,output_cleanfolder)
-    #     df_metrics = compare_models(df_enrichedcleanlog,"incident_id",output_cleanmetrics.replace(".csv",logsampled))
-    #     test = multi_metric_ranks(df_metrics,output_cleanranks.replace(".csv",logsampled))
-    #     logging.info("[END CLEAN CASE] %s", logsampled)
+    for logsampled in os.listdir(actual_input_folder):
+        logging.info("[START CLEAN CASE] %s", logsampled)
+        log_by_case = format_dataset_by_incidents(actual_input_folder+logsampled, "incident_id")
+        df_enrichedcleanlog = cost_computation(actual_input_folder+logsampled,log_by_case,output_cleanfolder)
+        df_metrics = compare_models(df_enrichedcleanlog,"incident_id",output_cleanmetrics.replace(".csv",logsampled))
+        test = multi_metric_ranks(df_metrics,output_cleanranks.replace(".csv",logsampled))
+        logging.info("[END CLEAN CASE] %s", logsampled)
 
     for logfile in os.listdir(actual_input_folder):
         logging.info("[START NOISING] %s", logfile)
