@@ -7,6 +7,7 @@ import config
 
 output_cleanfolder=config.output_cleanfolder
 colors_models=config.colors_models
+plot_folder=config.plot_folder
 
 def plot_performance():
     rank_df = pd.DataFrame()
@@ -20,15 +21,14 @@ def plot_performance():
                     if len(rank_df)==0: rank_df=metric_df
                     else: rank_df = pd.concat([rank_df, metric_df], ignore_index=True)
 
-    fig = plt.figure(figsize=(10, 5))
+    fig = plt.figure(figsize=(6, 5))
     plt.rcParams.update({'font.size': 14})
-    plt.title('Performance')
 
     models = list(set((rank_df["Model"].to_list()+rank_df["Gt"].to_list())))
     models.sort()
 
     x_position_increment = 1 / len(models)
-    legend_lines=[]
+    models_labels=[]
     for i in range(0,len(models)):
 
         positions = []
@@ -43,19 +43,17 @@ def plot_performance():
                     whiskerprops=dict(color="#000000"),
                     flierprops=dict(color="#000000",
                                     markeredgecolor="#000000"),
-                    widths=(x_position_increment / 3) * 2
+                    widths=x_position_increment * 2
                     )
+        models_labels.append(models[i].replace("gt","M"))
             
-    plt.xlabel("Models")
+    plt.xlabel("models")
     plt.ylabel("MMR")
-    plt.xticks(range(0,len(models)), models) #TODO: replace gt with m
-    plt.savefig("test.png") #TODO: path storage
+    plt.xticks(range(0,len(models)), models_labels)
+    plt.savefig(plot_folder+"perfromance_box.png", bbox_inches='tight')
     
     return
 
 
 def main_analysis():
     plot_performance()
-
-# if __name__ == "__main__":
-#     plot_performance()

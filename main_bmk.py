@@ -21,6 +21,7 @@ output_folder=config.output_folder
 output_cleanfolder=config.output_cleanfolder
 output_cleanmetrics=config.output_cleanmetrics
 output_cleanranks=config.output_cleanranks
+plot_folder=config.plot_folder
 
 output_noisedfolder=config.output_noisedfolder
 output_noisedlog_folder=config.output_noisedlog_folder
@@ -129,4 +130,5 @@ if __name__ == '__main__':
 
 
     ### Analysis
+    if not os.path.exists(plot_folder): os.mkdir(plot_folder)
     main_analysis()
