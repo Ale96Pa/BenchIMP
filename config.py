@@ -64,9 +64,16 @@ features_list = ["duration_phase", "preproc_priority", "reassignment_count", "pr
 features_type = ["float", "enum", "integer", "enum", "enum"]
 features_augment = ["duration_process", "preproc_priority", "reassignment_count", "preproc_impact", "preproc_urgency"]
 
+valOut_folder =  output_folder+"noisingValidation/"
+noising_validation_output = valOut_folder+"noisingValidOutput/"
+noising_validation_report = valOut_folder+"noisingValidReport/"
+only_validation = True
 
 
-
+"""
+Analysis
+"""
+colors_models = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00']
 
 
 
