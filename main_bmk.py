@@ -41,7 +41,7 @@ valOut_folder=config.valOut_folder
 def run_single_benchmark(params):
     inputlog_event, output_noisefolder = params
     output_metrics = output_noisefolder+output_noisemetrics
-    output_ranks = output_noisefolder+output_noiseranks
+    output_ranks = output_noisefolder+output_noiseranks    
 
     logging.info("[START experiment]: %s - %s",inputlog_event, output_noisefolder)
     df_enrichednoiselog = cost_computation(inputlog_event,output_noisefolder)
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     if not os.path.exists(output_noisedfolder): os.mkdir(output_noisedfolder)
     if not os.path.exists(output_noisedresult_folder): os.mkdir(output_noisedresult_folder)
 
-    actual_input_folder=input_logfolder
+    # actual_input_folder=input_logfolder
     # if perform_sampling:
     #     logging.info("[START SAMPLING]")
     #     for logfile in os.listdir(input_logfolder):
@@ -90,10 +90,11 @@ if __name__ == '__main__':
     # else:
     #     logging.info("No augmentation")
     
+    # actual_input_folder=tmp_folder
     # for logsampled in os.listdir(actual_input_folder):
     #     logging.info("[START CLEAN CASE] %s", logsampled)
     #     log_by_case = format_dataset_by_incidents(actual_input_folder+logsampled, "incident_id")
-    #     df_enrichedcleanlog = cost_computation(actual_input_folder+logsampled,log_by_case,output_cleanfolder)
+    #     df_enrichedcleanlog = cost_computation(actual_input_folder+logsampled,output_cleanfolder)
     #     df_metrics = compare_models(df_enrichedcleanlog,"incident_id",output_cleanmetrics.replace(".csv",logsampled))
     #     test = multi_metric_ranks(df_metrics,output_cleanranks.replace(".csv",logsampled))
     #     logging.info("[END CLEAN CASE] %s", logsampled)

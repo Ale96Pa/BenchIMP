@@ -11,10 +11,12 @@ def cost_computation(eventlog, outfolder):
     gt2 = Models.gt2(log, log_by_case, 'incident_id')
     gt3 = Models.gt3(log_by_case, 'incident_id')
     gt4 = Models.gt4(log_by_case, 'incident_id')
+    etr = Models.etr(log_by_case, 'incident_id')
     
     df_gts = pd.merge(gt1, gt2, how='inner', on=['incident_id'])
     df_gts = pd.merge(df_gts, gt3, how='inner', on=['incident_id'])
     df_gts = pd.merge(df_gts, gt4, how='inner', on=['incident_id'])
+    df_gts = pd.merge(df_gts, etr, how='inner', on=['incident_id'])
 
     df_full = pd.merge(log_by_case, df_gts, how='inner', on=['incident_id'])
     if eventlog!="": 

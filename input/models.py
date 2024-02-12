@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.ensemble import ExtraTreesRegressor
 
 class Models:
 
@@ -105,4 +106,22 @@ class Models:
             impact = row['preproc_impact']
             cost = 2.67 * int(num_employee) * impact
             l_dict.append({case_k: row[case_k], "gt4": cost * fract})
+        return pd.DataFrame(l_dict)
+    
+    """
+    Emulation of a newly introduced assessment model
+    """
+    def etr(log_by_case, case_k):
+        df = log_by_case
+        y = df["duration_process"]
+        X = df[["reassignment_count","preproc_urgency"]]
+        model = ExtraTreesRegressor(n_estimators=100).fit(X, y)
+        features = model.feature_importances_
+
+        l_dict = []
+        for index, row in log_by_case.iterrows():
+            num_employee = row['reassignment_count'] + 1
+            urgency = row['preproc_urgency']
+            cost = (int(num_employee) * features[0])+(int(urgency) * features[1])
+            l_dict.append({case_k: row[case_k], "gtETR": cost})
         return pd.DataFrame(l_dict)
