@@ -43,7 +43,14 @@ In the file BenchIMP/src/config.py the following main parameters can be configur
 - magnitude_step = (the step of magnitude experiment from 1 to 99, default is 20)
 - perform_sampling (boolean to activate sampling, default is True)
 - sampling_percentage (the percentage of entries to sample, default is 50, ignored if perform_sampling is False)
-- in_memory = (if store file in hdd (False) or store all the data in_memory(True). This latter will make the computation much heavier, use it carefully. Default is False.)
+- in_memory = (if store file in hdd (False) or store all the data in_memory (True). This latter will make the computation much heavier, use it carefully. Default is False.)
+
+## Inputs
+
+In the folder BenchIMP/src/input you can add your own inputs which are:
+
+- logs (Incident Management Process Log in XES or CSV format)
+- models.py (Python module calculating incident costs)
 
 ## Cite this work
 
